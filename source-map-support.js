@@ -88,12 +88,12 @@ retrieveFileHandlers.push(function(path) {
 
 // Support URLs relative to a directory, but be careful about a protocol prefix
 // in case we are in the browser (i.e. directories may start with "http://")
-function supportRelativeURL(file, url) {
+function supportRelativeURL(file, url, returnFile) {
   if (!file) return url;
   var dir = path.dirname(file);
   var match = /^\w+:\/\/[^\/]*/.exec(dir);
   var protocol = match ? match[0] : '';
-  return protocol + path.resolve(dir.slice(protocol.length), url);
+  return protocol + path.resolve((returnFile ? file : dir).slice(protocol.length), url);
 }
 
 function retrieveSourceMapURL(source) {
@@ -201,7 +201,7 @@ function mapSourcePosition(position) {
     // location in the original file.
     if (originalPosition.source !== null) {
       originalPosition.source = supportRelativeURL(
-        sourceMap.url, originalPosition.source);
+        sourceMap.url, originalPosition.source, sourceMap.url.slice(-4) !== '.map');
       return originalPosition;
     }
   }
